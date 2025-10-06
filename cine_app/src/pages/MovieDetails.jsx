@@ -10,6 +10,7 @@ const MovieDetails = () => {
   const [movie, setMovie] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const backendURL = "https://capstone-project-movie-ticket-booking.onrender.com";
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -34,7 +35,7 @@ const MovieDetails = () => {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Movie Poster */}
         <img
-          src={movie.poster?.startsWith("http") ? movie.poster : `http://localhost:3000/${movie.poster}`}
+          src={movie.poster?.startsWith("http") ? movie.poster : `${backendURL}${movie.poster}`}
           alt={movie.title}
           className="rounded-lg w-full md:w-1/3 max-h-96 object-cover"
         />

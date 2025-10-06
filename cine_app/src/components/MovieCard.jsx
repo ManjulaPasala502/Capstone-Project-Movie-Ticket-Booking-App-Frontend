@@ -4,13 +4,14 @@ import { Star } from "lucide-react"; // adjust if you use StarIcon differently
 
 const MovieCard = ({ movie }) => {
     const navigate = useNavigate();
+    const backendURL = "https://capstone-project-movie-ticket-booking.onrender.com";
 
     return (
         <div className="flex flex-col justify-between p-3 bg-gray-800 rounded-2xl hover:-translate-y-1 transition duration-300 w-full h-[300px]">
 
             <img
                 onClick={() => { navigate(`/movies/${movie._id}`); scrollTo(0, 0); }}
-                src={movie.poster?.startsWith('http') ? movie.poster : `http://localhost:3000/${movie.poster}`}
+                src={movie.poster?.startsWith('http') ? movie.poster : `${backendURL}${movie.poster}`}
                 alt={movie.title}
                 className="rounded-lg h-48 w-full object-cover cursor-pointer"
             />

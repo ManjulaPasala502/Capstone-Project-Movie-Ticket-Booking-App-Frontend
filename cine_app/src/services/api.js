@@ -23,7 +23,7 @@ API.interceptors.response.use(
   }
 );
 
-// CRUD helpers
+// CRUD 
 export const getMovies = () => API.get("/movies");
 export const addMovie = (data) => API.post("/movies", data);
 export const updateMovie = (id, data) => API.put(`/movies/${id}`, data);
