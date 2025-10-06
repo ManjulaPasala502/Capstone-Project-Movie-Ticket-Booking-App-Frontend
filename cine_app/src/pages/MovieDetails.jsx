@@ -7,16 +7,15 @@ import ReactPlayer from "react-player";
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [movie, setMovie] = useState();
+  const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const backendURL = "https://capstone-project-movie-ticket-booking.onrender.com";
 
   useEffect(() => {
     const fetchMovie = async () => {
       try {
         const res = await API.get(`/movies/${id}`);
-        setMovie(res.data.data);
+        setMovie(res.data.data); // get movie object
       } catch (err) {
         console.error("Failed to fetch movie:", err);
         setError("Failed to load movie details.");
@@ -35,7 +34,7 @@ const MovieDetails = () => {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Movie Poster */}
         <img
-          src={movie.poster?.startsWith("http") ? movie.poster : `${backendURL}/uploads/${movie.poster}`}
+          src={movie.poster}
           alt={movie.title}
           className="rounded-lg w-full md:w-1/3 max-h-96 object-cover"
         />
