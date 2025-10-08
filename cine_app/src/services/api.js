@@ -2,7 +2,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://capstone-project-movie-ticket-booking.onrender.com/api",
+  baseURL:
+    import.meta.env.MODE === "development"
+      ? "http://localhost:3000/api"
+      : "https://capstone-project-movie-ticket-booking.onrender.com/api",
 });
 
 // Attach JWT token

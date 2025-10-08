@@ -1,3 +1,4 @@
+// File: src/components/CheckoutForm.jsx
 import { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import API from "../services/api";
@@ -22,34 +23,44 @@ const CheckoutForm = ({ amount, seats, showId, onSuccess }) => {
     setErrorMsg("");
 
     try {
-      // 1️⃣ Create booking + payment intent on backend
-      const { data } = await API.post("/bookings/book-and-pay", {
-        seats,
-        showId,
-        amount,
-      });
+      // Create booking + PaymentIntent on backend
+      const { data } = await API.post(
+        "/bookings/book-and-pay",
+        { seats, showId, amount },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
 
       const { clientSecret, bookingId } = data;
 
-      // 2️⃣ Confirm payment with Stripe
+      // Confirm payment with Stripe
       const cardElement = elements.getElement(CardElement);
-      const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+      const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement },
       });
 
-      if (error) {
-        setErrorMsg(error.message || "Payment failed");
+      if (result.error) {
+        setErrorMsg(result.error.message || "Payment failed");
         setLoading(false);
         return;
       }
 
-      if (paymentIntent.status === "succeeded") {
-        // 3️⃣ Confirm booking after successful payment
-        await API.post("/bookings/confirm", { bookingId });
+      if (result.paymentIntent?.status === "succeeded") {
+        console.log("✅ Payment succeeded, confirming booking...");
+
+        //  Confirm booking on backend
+        const confirmRes = await API.post(
+          "/bookings/confirm",
+          { bookingId }, // bookingId is a string now
+          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        );
+
+        console.log("Confirm API response:", confirmRes.data);
+
+        //  Trigger frontend success
         onSuccess();
       }
     } catch (err) {
-      console.error(err);
+      console.error("CheckoutForm error:", err.response?.data || err.message);
       setErrorMsg(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -62,7 +73,7 @@ const CheckoutForm = ({ amount, seats, showId, onSuccess }) => {
       {errorMsg && <p className="text-red-600 font-medium">{errorMsg}</p>}
       <button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || loading || seats.length === 0}
         className="mt-2 px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-500 transition"
       >
         {loading ? "Processing..." : `Pay ₹${amount}`}

@@ -22,6 +22,7 @@ const SeatLayout = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const rows = ["A", "B"];
   const columns = Array.from({ length: 9 }, (_, i) => i + 1);
@@ -207,9 +208,10 @@ const SeatLayout = () => {
         {!showCheckout && (
           <button
             onClick={handleProceed}
+            disabled={checkoutLoading} // prevent multiple clicks
             className="mt-4 px-6 py-3 bg-pink-600 text-white font-semibold rounded-md hover:bg-pink-500 transition"
           >
-            Proceed to Checkout
+            {checkoutLoading ? "Processing..." : "Proceed to Checkout"}
           </button>
         )}
 
@@ -224,11 +226,13 @@ const SeatLayout = () => {
                   showId={showId}
                   showTime={show?.showTime || ""}
                   onSuccess={handleSuccess}
+                  setCheckoutLoading={setCheckoutLoading}
                 />
               </Elements>
               <button
                 className="mt-4 px-4 py-2 bg-gray-300 rounded-md w-full hover:bg-gray-400 transition"
                 onClick={() => setShowCheckout(false)}
+                disabled={checkoutLoading} // prevent closing during processing
               >
                 Cancel
               </button>
